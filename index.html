@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#e94560">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="CardVault">
+  <link rel="apple-touch-icon" href="icons/icon-192.svg">
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="css/style.css">
+  <title>CardVault</title>
+</head>
+<body>
+  <div id="app">
+    <header id="header">
+      <button id="back-btn" class="header-btn hidden" aria-label="Go back">&#8592;</button>
+      <h1 id="page-title">My Collection</h1>
+      <div class="header-spacer"></div>
+    </header>
+    <main id="main"></main>
+    <nav id="tab-bar">
+      <button class="tab active" data-page="collection" aria-label="Collection">
+        <span class="tab-icon">🃏</span><span class="tab-label">Collection</span>
+      </button>
+      <button class="tab" data-page="portfolio" aria-label="Portfolio">
+        <span class="tab-icon">📊</span><span class="tab-label">Portfolio</span>
+      </button>
+      <button class="tab" data-page="search" aria-label="Search">
+        <span class="tab-icon">🔍</span><span class="tab-label">Search</span>
+      </button>
+    </nav>
+  </div>
+
+  <script src="js/db.js"></script>
+  <script src="js/services/pricing.js"></script>
+  <script src="js/services/csv.js"></script>
+  <script src="js/services/imageutil.js"></script>
+  <script src="js/services/ocr.js"></script>
+  <script src="js/pages/collection.js"></script>
+  <script src="js/pages/addcard.js"></script>
+  <script src="js/pages/detail.js"></script>
+  <script src="js/pages/portfolio.js"></script>
+  <script src="js/pages/search.js"></script>
+  <script src="js/router.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
