@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>The Card Vault — App Documentation</title>
+<style>
+  body { font-family: Calibri, Arial, sans-serif; max-width: 800px; margin: 40px auto; padding: 0 20px; color: #222; line-height: 1.6; }
+  h1 { color: #e94560; border-bottom: 3px solid #e94560; padding-bottom: 8px; }
+  h2 { color: #0f3460; margin-top: 32px; border-bottom: 1px solid #ccc; padding-bottom: 4px; }
+  h3 { color: #333; margin-top: 20px; }
+  ul { margin: 8px 0 16px 20px; }
+  li { margin-bottom: 6px; }
+  .subtitle { color: #666; font-size: 14px; margin-top: -8px; }
+  .tech { background: #f4f4f4; padding: 12px 16px; border-radius: 6px; font-family: Consolas, monospace; font-size: 13px; margin: 8px 0; }
+  table { border-collapse: collapse; width: 100%; margin: 12px 0; }
+  th, td { border: 1px solid #ccc; padding: 8px 12px; text-align: left; font-size: 14px; }
+  th { background: #0f3460; color: #fff; }
+  @media print { body { margin: 20px; } }
+</style>
+</head>
+<body>
+
+<h1>🏀 The Card Vault</h1>
+<p class="subtitle">Basketball, Baseball & Football Trading Card Inventory & Portfolio Tracker</p>
+<p><strong>Version:</strong> 1.0 &nbsp;|&nbsp; <strong>Date:</strong> April 29, 2026 &nbsp;|&nbsp; <strong>URL:</strong> https://Jgrates17.github.io/CardVault/</p>
+
+<h2>1. Overview</h2>
+<ul>
+  <li>Progressive Web App (PWA) — works on iPhone, Android, and any desktop browser</li>
+  <li>No app store, no developer account, no build tools required</li>
+  <li>Installable on iPhone via Safari → Share → "Add to Home Screen"</li>
+  <li>Offline support via service worker — works without internet after first load</li>
+  <li>All data stored locally in the browser (localStorage)</li>
+  <li>Hosted free on GitHub Pages</li>
+</ul>
+
+<h2>2. Features</h2>
+
+<h3>Card Inventory Management</h3>
+<ul>
+  <li>Add, edit, and delete trading cards</li>
+  <li>Capture front and back photos via camera or gallery</li>
+  <li>Automatic image compression (resized to 600×840, JPEG 70%) to stay within storage limits</li>
+  <li>OCR auto-scan — upload a front photo and the app attempts to auto-fill player name, team, brand, year, and card number using Tesseract.js (runs in-browser)</li>
+</ul>
+
+<h3>Card Attributes</h3>
+<table>
+  <tr><th>Field</th><th>Description</th></tr>
+  <tr><td>Sport</td><td>Basketball, Baseball, or Football</td></tr>
+  <tr><td>Player Name</td><td>Required field</td></tr>
+  <tr><td>Team</td><td>Free text (e.g. Los Angeles Lakers)</td></tr>
+  <tr><td>Year</td><td>Card year (numeric)</td></tr>
+  <tr><td>Card Number</td><td>e.g. #101</td></tr>
+  <tr><td>Brand</td><td>Preset list (Panini Prizm, Topps Chrome, etc.) + custom "Other..." option</td></tr>
+  <tr><td>Card Type</td><td>Base, Rookie, Insert, Parallel, Autograph, Memorabilia</td></tr>
+  <tr><td>Condition</td><td>Gem Mint (10) through Poor — 9 grades</td></tr>
+  <tr><td>Numbered/Serial</td><td>Toggle + serial number field (e.g. 25/99)</td></tr>
+  <tr><td>Notes</td><td>Free text for any additional info</td></tr>
+  <tr><td>Front/Back Images</td><td>Camera capture or gallery upload, auto-compressed</td></tr>
+</table>
+
+<h3>Preset Brands</h3>
+<ul>
+  <li>Panini Prizm, Topps Chrome, Upper Deck, Panini Select, Panini Mosaic</li>
+  <li>Panini Donruss, Panini Hoops, Panini Contenders, Panini National Treasures</li>
+  <li>Panini Flawless, Bowman</li>
+  <li><strong>Other...</strong> — type any custom brand name</li>
+</ul>
+
+<h3>Portfolio Dashboard</h3>
+<ul>
+  <li>Total collection value</li>
+  <li>Highest valued card (with player name)</li>
+  <li>Lowest valued card (with player name)</li>
+  <li>Average and median card values</li>
+  <li>Top 5 most valuable cards (clickable)</li>
+  <li>Value breakdown by Sport</li>
+  <li>Value breakdown by Brand</li>
+  <li>Value breakdown by Team</li>
+  <li>Value breakdown by Card Type</li>
+  <li>"Refresh All Values" button to recalculate</li>
+</ul>
+
+<h3>Search & Filter</h3>
+<ul>
+  <li>Full-text search across player, brand, team, sport, and notes</li>
+  <li>Filter chips for Sport, Brand, Team, and Card Type</li>
+  <li>Sort options: Value ↓, Value ↑, Name A-Z, Newest, Oldest, Recently Added</li>
+  <li>Live result count and total value of filtered results</li>
+</ul>
+
+<h3>Import & Export</h3>
+<ul>
+  <li><strong>CSV Export</strong> — downloads card data (no images) as a .csv file</li>
+  <li><strong>JSON Export</strong> — full backup including images and all fields</li>
+  <li><strong>CSV Import</strong> — bulk add cards from a CSV file</li>
+  <li><strong>JSON Import</strong> — restore from a full JSON backup</li>
+</ul>
+
+<h3>CSV Import Format</h3>
+<div class="tech">sport,playerName,team,brand,year,cardNumber,cardType,condition,isNumbered,serialNumber,notes</div>
+
+<h2>3. Pricing Engine</h2>
+<ul>
+  <li>Currently uses a mock algorithm based on card attributes (brand, player, condition, type, year, numbered status)</li>
+  <li>Factors in known brand multipliers, star player multipliers, and condition grades</li>
+  <li>Designed to be swapped with a real API — edit <code>js/services/pricing.js</code> and replace the <code>lookupCardValue()</code> function body</li>
+  <li>Suggested real APIs: eBay Browse API, PSA Card Values, SportsCardsPro, PriceCharting</li>
+</ul>
+
+<h2>4. Technical Architecture</h2>
+<ul>
+  <li><strong>Stack:</strong> Pure HTML, CSS, vanilla JavaScript — zero dependencies, no build step</li>
+  <li><strong>Storage:</strong> localStorage (~5MB browser limit)</li>
+  <li><strong>Image compression:</strong> Canvas-based resize + JPEG encoding before storage</li>
+  <li><strong>OCR:</strong> Tesseract.js v5 loaded from CDN on first scan</li>
+  <li><strong>Offline:</strong> Service worker caches all app assets</li>
+  <li><strong>Hosting:</strong> GitHub Pages (free, static file hosting)</li>
+  <li><strong>PWA:</strong> Web app manifest + service worker for installability</li>
+</ul>
+
+<h3>File Structure</h3>
+<div class="tech">
+├── index.html &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Main app shell<br>
+├── manifest.json &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;PWA manifest<br>
+├── sw.js &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Service worker<br>
+├── css/style.css &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;All styles<br>
+├── icons/icon-192.svg &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;App icon<br>
+├── js/app.js &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Bootstrap + event wiring<br>
+├── js/db.js &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;localStorage database<br>
+├── js/router.js &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SPA page router<br>
+├── js/pages/collection.js &nbsp;Collection list page<br>
+├── js/pages/addcard.js &nbsp;&nbsp;&nbsp;&nbsp;Add/Edit card form<br>
+├── js/pages/detail.js &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Card detail view<br>
+├── js/pages/portfolio.js &nbsp;&nbsp;Portfolio dashboard<br>
+├── js/pages/search.js &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Search & filter page<br>
+├── js/services/pricing.js &nbsp;Price lookup engine<br>
+├── js/services/csv.js &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CSV/JSON import & export<br>
+├── js/services/imageutil.js Image compression<br>
+└── js/services/ocr.js &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Tesseract.js OCR scanner
+</div>
+
+<h2>5. How to Use</h2>
+
+<h3>On iPhone</h3>
+<ul>
+  <li>Open <strong>https://Jgrates17.github.io/CardVault/</strong> in Safari</li>
+  <li>Tap the Share button → "Add to Home Screen"</li>
+  <li>Opens fullscreen like a native app, works offline</li>
+</ul>
+
+<h3>On Windows / Desktop</h3>
+<ul>
+  <li>Open the URL in Chrome, Edge, or Firefox</li>
+  <li>Chrome/Edge will offer "Install app" in the address bar</li>
+  <li>Or just use it in the browser tab</li>
+</ul>
+
+<h3>Local Development</h3>
+<ul>
+  <li>Open <code>index.html</code> directly in any browser — everything runs client-side</li>
+  <li>No Node.js, no npm, no build tools needed</li>
+</ul>
+
+<h2>6. Known Limitations</h2>
+<ul>
+  <li>localStorage is capped at ~5MB — image compression helps but very large collections with photos may hit the limit</li>
+  <li>OCR accuracy varies by card design — works best on cards with clear, printed text</li>
+  <li>Pricing is mock/estimated — not connected to a live market data source yet</li>
+  <li>Data is per-browser — no cloud sync between devices</li>
+</ul>
+
+<h2>7. Future Enhancements</h2>
+<ul>
+  <li>Connect to a real pricing API (eBay, PSA, SportsCardsPro)</li>
+  <li>Migrate storage to IndexedDB for larger capacity</li>
+  <li>Cloud sync / user accounts</li>
+  <li>Barcode/QR scanning for graded cards</li>
+  <li>Collection sharing and social features</li>
+</ul>
+
+</body>
+</html>
