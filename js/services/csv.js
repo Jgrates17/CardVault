@@ -84,5 +84,35 @@ const CSV = (() => {
     });
   }
 
-  return { exportCards, importCards };
+  function exportJSON(cards) {
+    const blob = new Blob([JSON.stringify(cards, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'cardvault_backup.json';
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  function importJSON(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const cards = JSON.parse(e.target.result);
+          if (!Array.isArray(cards)) throw new Error('Invalid JSON format');
+          cards.forEach(c => {
+            if (!c.id) c.id = DB.generateId();
+            if (!c.dateAdded) c.dateAdded = new Date().toISOString();
+            c.estimatedValue = Pricing.lookupCardValue(c);
+          });
+          resolve(cards);
+        } catch (err) { reject(err); }
+      };
+      reader.onerror = reject;
+      reader.readAsText(file);
+    });
+  }
+
+  return { exportCards, exportJSON, importCards, importJSON };
 })();

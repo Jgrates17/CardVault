@@ -11,5 +11,8 @@ document.querySelectorAll('.tab').forEach(tab => {
 // Back button
 document.getElementById('back-btn').addEventListener('click', () => Router.back());
 
+// Brand click goes home
+document.getElementById('brand').addEventListener('click', () => Router.go('collection'));
+
 // Boot
 Router.init();

@@ -34,20 +34,31 @@ html, body {
 #header {
   display: flex;
   align-items: center;
-  padding: 12px 16px;
-  padding-top: calc(12px + var(--safe-top));
+  padding: 10px 12px;
+  padding-top: calc(10px + var(--safe-top));
   background: var(--bg);
   border-bottom: 1px solid var(--border);
-  min-height: 56px;
+  min-height: 52px;
   flex-shrink: 0;
+  gap: 8px;
 }
-#header h1 { font-size: 18px; flex: 1; text-align: center; }
+#header h1 { font-size: 15px; color: var(--muted); font-weight: 500; white-space: nowrap; }
 .header-btn {
   background: none; border: none; color: var(--accent);
-  font-size: 22px; cursor: pointer; width: 40px; text-align: left;
+  font-size: 22px; cursor: pointer; width: 32px; text-align: center; flex-shrink: 0;
 }
-.header-spacer { width: 40px; }
-.hidden { visibility: hidden; }
+.header-spacer { flex: 1; }
+.hidden { visibility: hidden; display: none !important; }
+
+/* Brand */
+.header-brand {
+  display: flex; align-items: center; gap: 8px; flex-shrink: 0; cursor: pointer;
+}
+.brand-icon { flex-shrink: 0; }
+.brand-name {
+  font-size: 17px; font-weight: 800; color: var(--accent);
+  letter-spacing: -0.3px; white-space: nowrap;
+}
 
 /* Main */
 #main {
@@ -238,3 +249,15 @@ textarea.input { resize: vertical; min-height: 70px; }
 .mb-8 { margin-bottom: 8px; }
 .mb-12 { margin-bottom: 12px; }
 .mt-16 { margin-top: 16px; }
+
+/* Modal */
+.modal {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 100; padding: 20px;
+}
+.modal.hidden { display: none; }
+.modal-content {
+  background: var(--surface); border-radius: 16px; padding: 24px;
+  width: 100%; max-width: 340px;
+}

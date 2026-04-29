@@ -5,7 +5,10 @@ const CollectionPage = (() => {
 
     let html = `
       <input type="text" class="input mb-8" id="col-filter" placeholder="Filter by player, brand, or team...">
-      <button class="btn btn-primary mb-12" onclick="Router.go('addcard')">+ Add Card</button>
+      <div style="display:flex;gap:8px;margin-bottom:12px">
+        <button class="btn btn-primary" style="flex:1" onclick="Router.go('addcard')">+ Add Card</button>
+        ${cards.length > 0 ? `<button class="btn btn-secondary" style="flex:1" onclick="CollectionPage.showExport()">📤 Export</button>` : ''}
+      </div>
     `;
 
     if (cards.length === 0) {
@@ -16,12 +19,26 @@ const CollectionPage = (() => {
 
     html += `
       <div class="csv-section">
-        <p>Import cards from CSV</p>
-        <label class="file-input-label">
-          Choose CSV File
-          <input type="file" accept=".csv" id="csv-import">
-        </label>
-        ${cards.length > 0 ? `<button class="btn btn-sm btn-secondary mt-16" onclick="CollectionPage.exportCSV()">Export CSV</button>` : ''}
+        <p>Import collection</p>
+        <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+          <label class="file-input-label">
+            CSV File
+            <input type="file" accept=".csv" id="csv-import">
+          </label>
+          <label class="file-input-label">
+            JSON Backup
+            <input type="file" accept=".json" id="json-import">
+          </label>
+        </div>
+      </div>
+      <div id="export-modal" class="modal hidden">
+        <div class="modal-content">
+          <h3 style="margin-bottom:12px;color:var(--accent)">Export Collection</h3>
+          <p style="color:var(--muted);font-size:13px;margin-bottom:16px">CSV exports card data only. JSON includes images and all fields (full backup).</p>
+          <button class="btn btn-primary mb-8" onclick="CollectionPage.exportCSV()">Export as CSV</button>
+          <button class="btn btn-secondary mb-8" style="width:100%" onclick="CollectionPage.exportJSON()">Export as JSON (full backup)</button>
+          <button class="btn btn-sm" style="width:100%;background:transparent;color:var(--muted)" onclick="CollectionPage.hideExport()">Cancel</button>
+        </div>
       </div>
     `;
 
@@ -52,6 +69,20 @@ const CollectionPage = (() => {
         alert('Failed to import CSV: ' + err.message);
       }
     });
+
+    document.getElementById('json-import')?.addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      try {
+        const imported = await CSV.importJSON(file);
+        let all = DB.getAll();
+        all = all.concat(imported);
+        DB.save(all);
+        Router.go('collection');
+      } catch (err) {
+        alert('Failed to import JSON: ' + err.message);
+      }
+    });
   }
 
   function renderList(cards) {
@@ -78,9 +109,23 @@ const CollectionPage = (() => {
 
   function exportCSV() {
     CSV.exportCards(DB.getAll());
+    hideExport();
   }
 
-  return { render, exportCSV };
+  function exportJSON() {
+    CSV.exportJSON(DB.getAll());
+    hideExport();
+  }
+
+  function showExport() {
+    document.getElementById('export-modal')?.classList.remove('hidden');
+  }
+
+  function hideExport() {
+    document.getElementById('export-modal')?.classList.add('hidden');
+  }
+
+  return { render, exportCSV, exportJSON, showExport, hideExport };
 })();
 
 function esc(s) {

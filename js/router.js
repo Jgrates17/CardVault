@@ -25,8 +25,15 @@ const Router = (() => {
     document.getElementById('page-title').textContent = titles[page] || 'CardVault';
 
     const backBtn = document.getElementById('back-btn');
+    const brand = document.getElementById('brand');
     const isSubPage = !tabPages.includes(page);
-    backBtn.classList.toggle('hidden', !isSubPage);
+    if (isSubPage) {
+      backBtn.classList.remove('hidden');
+      brand.classList.add('hidden');
+    } else {
+      backBtn.classList.add('hidden');
+      brand.classList.remove('hidden');
+    }
     document.getElementById('tab-bar').style.display = isSubPage ? 'none' : 'flex';
 
     // Update active tab

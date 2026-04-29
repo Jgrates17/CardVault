@@ -1,4 +1,4 @@
-const CACHE_NAME = 'cardvault-v2';
+const CACHE_NAME = 'cardvault-v4';
 const ASSETS = [
   './',
   './index.html',
