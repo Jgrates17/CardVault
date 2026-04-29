@@ -30,6 +30,7 @@ const AddCardPage = (() => {
       </div>
 
       <h2 class="section-title">Card Details</h2>
+      <div id="scan-status" class="scan-status hidden"></div>
       <label class="form-label">Sport *</label>
       <div class="chip-row mb-8" id="sport-chips">
         ${Pricing.SPORTS.map(s => `<span class="chip${(existing?.sport || 'Basketball') === s ? ' active' : ''}" data-val="${s}">${s}</span>`).join('')}
@@ -134,9 +135,62 @@ const AddCardPage = (() => {
         if (side === 'front') { frontImg = dataUrl; }
         else { backImg = dataUrl; }
         document.getElementById(`${side}-preview`).innerHTML = imgPreview(dataUrl);
+
+        // Auto-scan front image with OCR
+        if (side === 'front') {
+          scanFrontImage(dataUrl);
+        }
       };
       reader.readAsDataURL(file);
     });
+  }
+
+  async function scanFrontImage(dataUrl) {
+    const status = document.getElementById('scan-status');
+    status.classList.remove('hidden');
+    status.className = 'scan-status scanning';
+    status.textContent = '🔍 Scanning card image for details...';
+
+    try {
+      const result = await OCR.scanCard(dataUrl);
+      applyOCRResults(result);
+      const found = [result.playerName, result.team, result.brand, result.year, result.cardNumber].filter(Boolean);
+      if (found.length > 0) {
+        status.className = 'scan-status success';
+        status.textContent = '✅ Found: ' + found.join(', ') + ' — review and adjust below';
+      } else {
+        status.className = 'scan-status warn';
+        status.textContent = '⚠️ Could not read card details. Fill in manually below.';
+      }
+    } catch (err) {
+      status.className = 'scan-status warn';
+      status.textContent = '⚠️ Scan failed — fill in details manually.';
+    }
+  }
+
+  function applyOCRResults(result) {
+    // Only fill empty fields — don't overwrite what the user already typed
+    const player = document.getElementById('f-player');
+    if (!player.value && result.playerName) player.value = result.playerName;
+
+    const team = document.getElementById('f-team');
+    if (!team.value && result.team) team.value = result.team;
+
+    const year = document.getElementById('f-year');
+    if (!year.value && result.year) year.value = result.year;
+
+    const cardNum = document.getElementById('f-cardnum');
+    if (!cardNum.value && result.cardNumber) cardNum.value = result.cardNumber;
+
+    // Select brand chip if detected and none is currently selected
+    if (result.brand && !getActiveChip('brand-chips')) {
+      const container = document.getElementById('brand-chips');
+      const match = container.querySelector(`.chip[data-val="${result.brand}"]`);
+      if (match) {
+        container.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+        match.classList.add('active');
+      }
+    }
   }
 
   function getActiveChip(containerId) {

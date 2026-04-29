@@ -261,3 +261,13 @@ textarea.input { resize: vertical; min-height: 70px; }
   background: var(--surface); border-radius: 16px; padding: 24px;
   width: 100%; max-width: 340px;
 }
+
+/* OCR Scan Status */
+.scan-status {
+  padding: 10px 14px; border-radius: 8px; font-size: 13px;
+  margin-bottom: 12px; text-align: center;
+}
+.scan-status.hidden { display: none; }
+.scan-status.scanning { background: var(--border); color: var(--muted); }
+.scan-status.success { background: #1a3a2a; color: var(--green); }
+.scan-status.warn { background: #3a2a1a; color: #e6a23c; }
