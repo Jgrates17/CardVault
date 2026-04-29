@@ -14,6 +14,15 @@ const CollectionPage = (() => {
     if (cards.length === 0) {
       html += `<div class="empty">No cards yet. Tap + Add Card to start!<br><br>Or import from CSV below.</div>`;
     } else {
+      const usageKB = DB.getUsageKB();
+      const usageMB = (usageKB / 1024).toFixed(1);
+      const pct = Math.min(100, Math.round((usageKB / 5120) * 100));
+      html += `
+        <div class="storage-bar mb-8">
+          <div class="storage-fill" style="width:${pct}%"></div>
+          <span class="storage-text">${usageMB} MB / 5 MB used</span>
+        </div>
+      `;
       html += `<div id="col-list"></div>`;
     }
 

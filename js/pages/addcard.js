@@ -126,22 +126,36 @@ const AddCardPage = (() => {
   }
 
   function wireImage(inputId, side) {
-    document.getElementById(inputId)?.addEventListener('change', (e) => {
+    document.getElementById(inputId)?.addEventListener('change', async (e) => {
       const file = e.target.files[0];
       if (!file) return;
-      const reader = new FileReader();
-      reader.onload = (ev) => {
-        const dataUrl = ev.target.result;
-        if (side === 'front') { frontImg = dataUrl; }
-        else { backImg = dataUrl; }
-        document.getElementById(`${side}-preview`).innerHTML = imgPreview(dataUrl);
+
+      // Show compressing state
+      document.getElementById(`${side}-preview`).innerHTML = `<div class="img-placeholder">Compressing...</div>`;
+
+      try {
+        // Compress image before storing to stay within localStorage limits
+        const compressed = await ImageUtil.compress(file);
+        if (side === 'front') { frontImg = compressed; }
+        else { backImg = compressed; }
+        document.getElementById(`${side}-preview`).innerHTML = imgPreview(compressed);
 
         // Auto-scan front image with OCR
         if (side === 'front') {
-          scanFrontImage(dataUrl);
+          scanFrontImage(compressed);
         }
-      };
-      reader.readAsDataURL(file);
+      } catch (err) {
+        // Fallback to raw if compression fails
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          const dataUrl = ev.target.result;
+          if (side === 'front') { frontImg = dataUrl; }
+          else { backImg = dataUrl; }
+          document.getElementById(`${side}-preview`).innerHTML = imgPreview(dataUrl);
+          if (side === 'front') scanFrontImage(dataUrl);
+        };
+        reader.readAsDataURL(file);
+      }
     });
   }
 
