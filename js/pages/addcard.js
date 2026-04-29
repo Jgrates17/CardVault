@@ -50,6 +50,10 @@ const AddCardPage = (() => {
       <label class="form-label">Brand</label>
       <div class="chip-row mb-8" id="brand-chips">
         ${Pricing.BRANDS.map(b => `<span class="chip${existing?.brand === b ? ' active' : ''}" data-val="${b}">${b}</span>`).join('')}
+        <span class="chip${existing?.brand && !Pricing.BRANDS.includes(existing.brand) ? ' active' : ''}" data-val="__custom__">Other...</span>
+      </div>
+      <div id="custom-brand-section" style="display:${existing?.brand && !Pricing.BRANDS.includes(existing.brand) ? 'block' : 'none'}">
+        <input class="input" id="f-custom-brand" value="${esc(existing?.brand && !Pricing.BRANDS.includes(existing.brand) ? existing.brand : '')}" placeholder="Enter brand name">
       </div>
 
       <label class="form-label">Card Type</label>
@@ -79,7 +83,10 @@ const AddCardPage = (() => {
 
     // Wire up chip selectors
     wireChips('sport-chips');
-    wireChips('brand-chips');
+    wireChips('brand-chips', () => {
+      const active = getActiveChip('brand-chips');
+      document.getElementById('custom-brand-section').style.display = active === '__custom__' ? 'block' : 'none';
+    });
     wireChips('type-chips');
     wireChips('cond-chips');
 
@@ -106,13 +113,14 @@ const AddCardPage = (() => {
       : `<div class="img-placeholder">No Image</div>`;
   }
 
-  function wireChips(containerId) {
+  function wireChips(containerId, onChange) {
     const container = document.getElementById(containerId);
     container.addEventListener('click', (e) => {
       const chip = e.target.closest('.chip');
       if (!chip) return;
       container.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
       chip.classList.add('active');
+      if (onChange) onChange();
     });
   }
 
@@ -145,7 +153,9 @@ const AddCardPage = (() => {
       playerName,
       sport: getActiveChip('sport-chips') || 'Basketball',
       team: document.getElementById('f-team').value.trim(),
-      brand: getActiveChip('brand-chips'),
+      brand: getActiveChip('brand-chips') === '__custom__'
+        ? (document.getElementById('f-custom-brand').value.trim() || 'Unknown')
+        : getActiveChip('brand-chips'),
       year: parseInt(document.getElementById('f-year').value) || new Date().getFullYear(),
       cardNumber: document.getElementById('f-cardnum').value.trim(),
       cardType: getActiveChip('type-chips') || 'Base',
