@@ -1,0 +1,13 @@
+{
+  "enabled": true,
+  "name": "Auto Commit & Push",
+  "description": "Automatically commits all changes and pushes to GitHub after the agent finishes making changes.",
+  "version": "1",
+  "when": {
+    "type": "agentStop"
+  },
+  "then": {
+    "type": "runCommand",
+    "command": "git add . && git config http.sslVerify false && git commit -m \"Auto-update from CardVault\" && git push -u origin main && git config http.sslVerify true"
+  }
+}
